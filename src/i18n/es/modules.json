@@ -1,0 +1,54 @@
+{
+  "common":{
+    "controller_error":"Hubo un error.",
+    "permissions":{
+      "denied":"Lo sentimos, acceso denegado"
+    }
+  },
+  "users":{
+    "update":{
+      "success":"Role actualizado con exito."
+    },
+    "store":{
+      "success":"Role registrado con exito."
+    },
+    "delete":{
+      "success":"Role eliminado con exito."
+    }
+  },
+  "chat_room":{
+    "update":{
+      "success":"Sala de chat actualizada con éxito."
+    },
+    "store":{
+      "success":"Sala de chat registrada con éxito."
+    },
+    "delete":{
+      "success":"Sala de chat eliminada con éxito."
+    }
+  },
+  "auth":{
+    "register":{
+      "success":"Nueva cuenta creada con éxito."
+    },
+    "login":{
+      "success":"Sesión iniciada correctamente.",
+      "failure":"Estas credenciales no coinciden con nuestros registros.",
+      "verify":"Por favor verifica primero tu correo.",
+      "password":"La contraseña proporcionada es incorrecta."
+    },
+    "logout":{
+      "success":"Sesión cerrada correctamente."
+    }
+  },
+
+  "notifications":{
+    "seen":{
+      "success":"Notificación leída."
+    },
+    "delete":{
+      "success":"Notificación eliminada."
+    }
+  }
+
+}

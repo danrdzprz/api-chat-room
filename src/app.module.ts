@@ -5,9 +5,23 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import databaseConfig from './config/database.config';
+import { AuthModule } from './modules/auth/auth.module';
+import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
+import * as path from 'path';
 @Module({
   imports: [
     // MongooseModule.forRoot(mongodb_url),
+    I18nModule.forRoot({
+      fallbackLanguage: 'es',
+      loaderOptions: {
+        path: path.join(__dirname, '/i18n/'),
+        watch: true,
+      },
+      resolvers: [
+        { use: QueryResolver, options: ['lang'] },
+        AcceptLanguageResolver,
+      ],
+    }),
     ConfigModule.forRoot({ isGlobal: true, load: [databaseConfig] }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -20,6 +34,7 @@ import databaseConfig from './config/database.config';
       inject: [ConfigService],
     }),
     UsersModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
