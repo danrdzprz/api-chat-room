@@ -4,12 +4,16 @@ import { ChatRoomsController } from './chat-rooms.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ChatRoom, ChatRoomScheme } from 'src/schemas/chat-room.schema';
 import { ChatRoomRepository } from './chat-rooms.repository';
+import { Message, MessageScheme } from 'src/schemas/messages.schema';
+import { MessageRepository } from '../messages/messages.repository';
+import { NestjsFormDataModule } from 'nestjs-form-data';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: ChatRoom.name, schema: ChatRoomScheme }]),
+    NestjsFormDataModule,
+    MongooseModule.forFeature([{ name: ChatRoom.name, schema: ChatRoomScheme }, { name: Message.name, schema: MessageScheme }]),
   ],
   controllers: [ChatRoomsController],
-  providers: [ChatRoomsService, ChatRoomRepository],
+  providers: [ChatRoomsService, ChatRoomRepository, MessageRepository],
 })
 export class ChatRoomsModule {}

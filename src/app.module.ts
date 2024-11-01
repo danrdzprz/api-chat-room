@@ -8,6 +8,7 @@ import databaseConfig from './config/database.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import { ChatRoomsModule } from './modules/chat-rooms/chat-rooms.module';
+import { MessagesModule } from './modules/messages/messages.module';
 import * as path from 'path';
 @Module({
   imports: [
@@ -36,7 +37,8 @@ import * as path from 'path';
     }),
     UsersModule,
     AuthModule,
-    ChatRoomsModule
+    ChatRoomsModule,
+    MessagesModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { Injectable, NotFoundException  } from '@nestjs/common';
+import { Injectable  } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginationOptions } from '../../common/utils/pagination-options';
 import { ChatRoom, ChatRoomDocument } from 'src/schemas/chat-room.schema';
@@ -31,7 +31,6 @@ export class ChatRoomRepository {
     previous_page:previous_page,
     next_page:next_page,
   }
-  console.log(ChatRooms);
   return response;
  }
 
