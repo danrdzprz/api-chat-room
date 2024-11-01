@@ -7,6 +7,7 @@ import { UsersModule } from './modules/users/users.module';
 import databaseConfig from './config/database.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
+import { ChatRoomsModule } from './modules/chat-rooms/chat-rooms.module';
 import * as path from 'path';
 @Module({
   imports: [
@@ -34,7 +35,8 @@ import * as path from 'path';
       inject: [ConfigService],
     }),
     UsersModule,
-    AuthModule
+    AuthModule,
+    ChatRoomsModule
   ],
   controllers: [AppController],
   providers: [AppService],
