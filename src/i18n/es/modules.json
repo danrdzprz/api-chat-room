@@ -7,13 +7,24 @@
   },
   "users":{
     "update":{
-      "success":"Role actualizado con exito."
+      "success":"Usuario actualizado con éxito."
     },
     "store":{
-      "success":"Role registrado con exito."
+      "success":"Usuario registrado con éxito."
     },
     "delete":{
-      "success":"Role eliminado con exito."
+      "success":"Usuario eliminado con éxito."
+    }
+  },
+  "messages":{
+    "update":{
+      "success":"Mensaje actualizado con éxito."
+    },
+    "store":{
+      "success":"Mensaje registrado con éxito."
+    },
+    "delete":{
+      "success":"Mensaje eliminado con éxito."
     }
   },
   "chat_room":{

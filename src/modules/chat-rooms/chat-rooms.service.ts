@@ -44,7 +44,7 @@ export class ChatRoomsService {
       chat_room_id,
       data,
     );
-    return { message: this.i18n.t('modules.messages.create.success') };
+    return { message: this.i18n.t('modules.messages.store.success') };
   }
 
   async getMessages(chat_room_id: string, options: PaginationOptions) {
