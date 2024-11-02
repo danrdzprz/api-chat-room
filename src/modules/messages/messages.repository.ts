@@ -6,8 +6,15 @@ import { PaginationDto } from 'src/common/dto/pagination-response.dto';
 import { Message, MessageDocument } from 'src/schemas/messages.schema';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { CreateMessageDto } from './dto/create-message.dto';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'socket.io';
+import { sendToRoom } from 'src/sockets/rooms';
+
 @Injectable()
+@WebSocketGateway()
 export class MessageRepository {
+  @WebSocketServer()
+  server: Server;
  constructor(@InjectModel(Message.name) private model: Model<MessageDocument>){
  }
 
@@ -35,23 +42,30 @@ export class MessageRepository {
  }
 
  async detail(id : string|unknown):Promise<MessageDocument>{
-  const user = await this.model.findById(id).select({"_id":1, "text": 1}).exec();
-  return user;
+  const message = await this.model.findById(id).select({"_id":1, "text": 1})
+  .populate({path: 'owner',select: {'_id':1,'name':1}})
+  .populate({path: 'chat_room',select: {'_id':1,'name':1}})
+  .exec();
+  return message;
  }
 
  async store(user_id: string, chat_room_id: string, data: CreateMessageDto):Promise<MessageDocument>{
   const new_Message = await this.model.create({ ...data, chat_room: chat_room_id, owner: user_id}); 
+  sendToRoom(this.server, chat_room_id, 'new-message', new_Message);
   return new_Message;
  }
 
   async update(id: string, data:UpdateMessageDto):Promise<MessageDocument>{
-    const Message = await this.model.findById(id).exec();
-    const updated_Message = await this.model.findByIdAndUpdate(Message._id, data, { new: true }).exec();
+    const message = await this.detail(id);
+    const updated_Message = await this.model.findByIdAndUpdate(id, data, { new: true }).exec();
+    sendToRoom(this.server, message.chat_room._id, 'new-message', updated_Message);
     return updated_Message;
   }
 
  async remove(id: string): Promise<MessageDocument>{
+  const message = await this.detail(id);
   const deleteResponse = await this.model.findByIdAndDelete(id);
+  sendToRoom(this.server, message.chat_room._id, 'new-message', deleteResponse);
   return deleteResponse;
  }
 }

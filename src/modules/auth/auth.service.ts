@@ -8,12 +8,14 @@ import { DefaultException } from 'src/common/utils/default-error-dto';
 import { DefaultResponse } from 'src/common/utils/default-response.dto';
 import { UserDto } from '../users/dto/user.dto';
 import { I18nService } from 'nestjs-i18n';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   constructor(
     private user_repository: UserRepository,
     private jwtService: JwtService,
     private readonly i18n: I18nService,
+    private configService: ConfigService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<boolean> {
@@ -46,5 +48,12 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  async getUserFromAuthenticationToken(token: string) {
+    const { user_id } = this.jwtService.verify(token, {
+      secret: this.configService.get('JWT_SECRET'),
+    });
+    return this.user_repository.detail(user_id);
   }
 }

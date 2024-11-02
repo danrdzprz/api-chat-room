@@ -10,6 +10,7 @@ import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import { ChatRoomsModule } from './modules/chat-rooms/chat-rooms.module';
 import { MessagesModule } from './modules/messages/messages.module';
 import * as path from 'path';
+import { SocketsGateway } from './sockets/sockets.gateway';
 @Module({
   imports: [
     // MongooseModule.forRoot(mongodb_url),
@@ -41,6 +42,6 @@ import * as path from 'path';
     MessagesModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, SocketsGateway],
 })
 export class AppModule {}

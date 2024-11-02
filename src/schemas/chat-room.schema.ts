@@ -6,6 +6,8 @@ export type ChatRoomDocument = HydratedDocument<ChatRoom>;
 
 @Schema({timestamps: true})
 export class ChatRoom {
+  _id: string;
+
   @Prop({ required: true })
   name: string;
 
