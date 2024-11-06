@@ -12,13 +12,28 @@ export class Message {
   text: string;
 
   @Prop({ required: false })
-  file_url: string;
+  file_path: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: User.name, required:true })
   owner: User;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: ChatRoom.name, required:true })
   chat_room: ChatRoom;
+
+  // @AfterLoad()
+  // async setCustomAttributes() {
+  //   const storage = new StorageFile();
+  //   this.photo_url = await storage.get(this.photo);
+  // }
 }
 
 export const MessageScheme = SchemaFactory.createForClass(Message);
+
+MessageScheme.pre('find', async function (next) {
+  try {
+    this.set('file_url', this.get("file_path"),);
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+});

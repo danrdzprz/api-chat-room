@@ -16,12 +16,12 @@ export class MessagesService {
 
   async update(id: string, updateMessageDto: UpdateMessageDto) {
     await this.message_repository.update(id, updateMessageDto);
-    return { message: this.i18n.t('modules.messages.update.delete') };
+    return { message: this.i18n.t('modules.messages.update') };
 
   }
 
   async remove(id: string) {
     await this.message_repository.remove(id);
-    return { message: this.i18n.t('modules.messages.register.delete') };
+    return { message: this.i18n.t('modules.messages.delete') };
   }
 }
