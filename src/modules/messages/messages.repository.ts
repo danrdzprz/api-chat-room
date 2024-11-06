@@ -24,7 +24,7 @@ export class MessageRepository {
   ){
   }
 
- async index(chat_room_id: string, options: PaginationOptions): Promise<PaginationDto<Message>>{
+ async index(chat_room_id: string, options: PaginationOptions): Promise<PaginationDto<MessageDocument>>{
   const total = await this.model.find({chat_room: chat_room_id}).countDocuments().exec();
   const items = parseInt(options.itemsPerPage); 
   const current_page = parseInt(options.page); 
@@ -33,12 +33,18 @@ export class MessageRepository {
   const previous_page = current_page != 1  ? current_page - 1 : null;
   const next_page = current_page != total_pages ? current_page +  1 : null;
   const skip = current_page != 1 ? (current_page - 1) * items : 0;
-  const Messages = await this.model.find({chat_room: chat_room_id}).select({"_id":1, "text": 1, "file_path": 1, "createdAt": 1})
+  const messages = await this.model.find({chat_room: chat_room_id}).select({"_id":1, "text": 1, "file_path": 1, "createdAt": 1})
   .populate({path: 'owner',select: {'_id':1,'name':1}})
   .sort({createdAt: 'desc'})
-  .skip(skip).limit(items).exec();
+  .skip(skip).limit(items).lean().exec();
+
+  messages.map( async x => {
+    x.file_url = x.file_path ? await this.storage_file.getUrl(x.file_path) : null;
+    return x;
+  });
+
   const response = {
-    data:Messages,
+    data:messages as MessageDocument[],
     total:total,
     total_pages: total_pages,
     current_page:current_page,
@@ -53,6 +59,7 @@ export class MessageRepository {
   .populate({path: 'owner',select: {'_id':1,'name':1}})
   .populate({path: 'chat_room',select: {'_id':1,'name':1}})
   .exec();
+  
   return message;
  }
 

@@ -13,14 +13,21 @@ import * as path from 'path';
 import { SocketsGateway } from './sockets/sockets.gateway';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { Response } from 'express';
+import configuration from './config/configuration';
 
-console.log(join(__dirname, '..', 'src/public'));
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'src/public'),
+      rootPath: join(__dirname, '..', 'src/public/'),
+      exclude: ['/api/(.*)'],
+      serveStaticOptions: {
+        setHeaders: (res: Response) => {
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        },
+      },
     }),
-    // MongooseModule.forRoot(mongodb_url),
     I18nModule.forRoot({
       fallbackLanguage: 'es',
       loaderOptions: {
@@ -32,13 +39,10 @@ console.log(join(__dirname, '..', 'src/public'));
         AcceptLanguageResolver,
       ],
     }),
-    ConfigModule.forRoot({ isGlobal: true, load: [databaseConfig] }),
+    ConfigModule.forRoot({ isGlobal: true, load: [databaseConfig, configuration] }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        // useCreateIndex: true,
-        // useNewUrlParser: true,
-        // useUnifiedTopology: true,
         uri: configService.get<string>('mongodb.uri'),
       }),
       inject: [ConfigService],

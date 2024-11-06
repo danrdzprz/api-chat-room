@@ -14,6 +14,8 @@ export class Message {
   @Prop({ required: false })
   file_path: string;
 
+  file_url?: string;
+
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: User.name, required:true })
   owner: User;
 
