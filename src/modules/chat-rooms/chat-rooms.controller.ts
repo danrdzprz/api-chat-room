@@ -6,9 +6,10 @@ import { UserPayload } from '../auth/dto/user.payload';
 import { Auth } from '../auth/auth.decorator';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { PaginationOptions } from 'src/common/utils/pagination-options';
-import { CreateMessageDto } from '../messages/dto/create-message.dto';
+import { CreateTextMessageDto } from '../messages/dto/create-text-message.dto';
 import { FormDataRequest } from 'nestjs-form-data';
 import { IsValidChatRoom } from 'src/common/helpers/guards/is-valid-chat-room.guard';
+import { CreateFileMessageDto } from '../messages/dto/create-image-message.dto';
 
 @Controller('chat-rooms')
 export class ChatRoomsController {
@@ -50,10 +51,16 @@ export class ChatRoomsController {
     return this.chatRoomsService.getMessages(id, options);
   }
 
-  @Post(':id/messages')
+  @Post(':id/text-message')
+  @UseGuards(IsValidChatRoom)
+  textMessage(@Auth() { id }: UserPayload, @Param('id') chat_room_id: string, @Body() data: CreateTextMessageDto) {
+    return this.chatRoomsService.textMessage(id, chat_room_id, data);
+  }
+
+  @Post(':id/file-message')
   @UseGuards(IsValidChatRoom)
   @FormDataRequest()
-  newMessage(@Auth() { id }: UserPayload, @Param('id') chat_room_id: string, @Body() data: CreateMessageDto) {
-    return this.chatRoomsService.newMessage(id, chat_room_id, data);
+  fileMessage(@Auth() { id }: UserPayload, @Param('id') chat_room_id: string, @Body() data: CreateFileMessageDto) {
+    return this.chatRoomsService.fileMessage(id, chat_room_id, data);
   }
 }

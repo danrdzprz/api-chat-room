@@ -5,10 +5,11 @@ import { PaginationOptions } from '../../common/utils/pagination-options';
 import { PaginationDto } from 'src/common/dto/pagination-response.dto';
 import { Message, MessageDocument } from 'src/schemas/messages.schema';
 import { UpdateMessageDto } from './dto/update-message.dto';
-import { CreateMessageDto } from './dto/create-message.dto';
+import { CreateTextMessageDto } from './dto/create-text-message.dto';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { sendToRoom } from 'src/sockets/rooms';
+import { CreateFileMessageDto } from './dto/create-image-message.dto';
 
 @Injectable()
 @WebSocketGateway()
@@ -18,6 +19,9 @@ export class MessageRepository {
  constructor(@InjectModel(Message.name) private model: Model<MessageDocument>){
  }
 
+ private storage_path = 'messages';
+
+
  async index(chat_room_id: string, options: PaginationOptions): Promise<PaginationDto<Message>>{
   const total = await this.model.countDocuments().exec();
   const items = parseInt(options.itemsPerPage); 
@@ -26,7 +30,7 @@ export class MessageRepository {
   const previous_page = current_page != 1  ? current_page - 1 : null;
   const next_page = current_page != total_pages ? current_page +  1 : null;
   const skip = current_page != 1 ? (current_page - 1) * items : 0;
-  const Messages = await this.model.find({chat_room: chat_room_id}).select({"_id":1, "text": 1})
+  const Messages = await this.model.find({chat_room: chat_room_id}).select({"_id":1, "text": 1, "file_url": 1})
   .populate({path: 'owner',select: {'_id':1,'name':1}})
   .sort({createdAt: 'asc'})
   .skip(skip).limit(items).exec();
@@ -49,8 +53,23 @@ export class MessageRepository {
   return message;
  }
 
- async store(user_id: string, chat_room_id: string, data: CreateMessageDto):Promise<MessageDocument>{
-  const new_Message = await this.model.create({ ...data, chat_room: chat_room_id, owner: user_id}); 
+ async storeTextMessage(user_id: string, chat_room_id: string, data: CreateTextMessageDto):Promise<MessageDocument>{
+  const new_Message = await this.model.create({ text: data.text, chat_room: chat_room_id, owner: user_id}); 
+  sendToRoom(this.server, chat_room_id, 'new-message', new_Message);
+  return new_Message;
+ }
+
+ async storeFileMessage(user_id: string, chat_room_id: string, data: CreateFileMessageDto):Promise<MessageDocument>{
+  const new_Message = await this.model.create({ text: data.text, chat_room: chat_room_id, owner: user_id}); 
+
+  console.log(data);
+  if (data.file) {
+    // const file_path = await this.storage_file.upload(
+    //   `${this.storage_path}/documents/contracts/${contract_file.file.originalName}`,
+    //   data.file.buffer,
+    // );
+  }
+
   sendToRoom(this.server, chat_room_id, 'new-message', new_Message);
   return new_Message;
  }

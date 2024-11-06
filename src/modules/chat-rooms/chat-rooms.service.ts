@@ -5,7 +5,8 @@ import { ChatRoomRepository } from './chat-rooms.repository';
 import { I18nService } from 'nestjs-i18n';
 import { PaginationOptions } from 'src/common/utils/pagination-options';
 import { MessageRepository } from '../messages/messages.repository';
-import { CreateMessageDto } from '../messages/dto/create-message.dto';
+import { CreateTextMessageDto } from '../messages/dto/create-text-message.dto';
+import { CreateFileMessageDto } from '../messages/dto/create-image-message.dto';
 
 @Injectable()
 export class ChatRoomsService {
@@ -38,8 +39,17 @@ export class ChatRoomsService {
     return { message: this.i18n.t('modules.chat_room.delete.success') };
   }
 
-  async newMessage(user_id: string, chat_room_id: string, data: CreateMessageDto) {
-    await this.message_repository.store(
+  async fileMessage(user_id: string, chat_room_id: string, data: CreateFileMessageDto) {
+    await this.message_repository.storeFileMessage(
+      user_id,
+      chat_room_id,
+      data,
+    );
+    return { message: this.i18n.t('modules.messages.store.success') };
+  }
+
+  async textMessage(user_id: string, chat_room_id: string, data: CreateTextMessageDto) {
+    await this.message_repository.storeTextMessage(
       user_id,
       chat_room_id,
       data,
