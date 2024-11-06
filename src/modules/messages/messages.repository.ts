@@ -11,11 +11,11 @@ import { Server } from 'socket.io';
 import { sendToRoom } from 'src/sockets/rooms';
 import { CreateFileMessageDto } from './dto/create-image-message.dto';
 import { StorageService } from 'src/common/services/StoreFile/Storage.service';
-import *  as fs from 'fs';
 
 @Injectable()
 @WebSocketGateway()
 export class MessageRepository {
+  
   @WebSocketServer()
   server: Server;
  constructor(
@@ -58,23 +58,26 @@ export class MessageRepository {
   const message = await this.model.findById(id).select({"_id":1, "text": 1, "file_path": 1, "createdAt": 1 })
   .populate({path: 'owner',select: {'_id':1,'name':1}})
   .populate({path: 'chat_room',select: {'_id':1,'name':1}})
+  .lean()
   .exec();
-  
-  return message;
+  message.file_url = message.file_path ? await this.storage_file.getUrl(message.file_path) : null;
+  return message as MessageDocument;
  }
 
  async storeTextMessage(user_id: string, chat_room_id: string, data: CreateTextMessageDto):Promise<MessageDocument>{
   const new_Message = await this.model.create({ text: data.text, chat_room: chat_room_id, owner: user_id}); 
-  sendToRoom(this.server, chat_room_id, 'new-message', new_Message);
+  const detail = await this.detail(new_Message._id);
+  sendToRoom(this.server, chat_room_id, 'new-message', detail);
   return new_Message;
  }
 
  async storeFileMessage(user_id: string, chat_room_id: string, data: CreateFileMessageDto):Promise<MessageDocument>{
-  const new_Message = await this.model.create({ text: data.text, chat_room: chat_room_id, owner: user_id}); 
+  const new_Message = await this.model.create({ chat_room: chat_room_id, owner: user_id}); 
   if (data.file) {
     const path = await this.storage_file.upload(`${new_Message._id}_${data.file.originalName}`, data.file.buffer);
     const updated_Message = await this.model.findByIdAndUpdate(new_Message._id, {file_path: path}, { new: true }).exec();
-    sendToRoom(this.server, chat_room_id, 'new-message', updated_Message);
+    const detail = await this.detail(new_Message._id);
+    sendToRoom(this.server, chat_room_id, 'new-message', detail);
     return updated_Message;
   }
  }
@@ -82,7 +85,7 @@ export class MessageRepository {
   async update(id: string, data:UpdateMessageDto):Promise<MessageDocument>{
     const message = await this.detail(id);
     const updated_Message = await this.model.findByIdAndUpdate(id, data, { new: true }).exec();
-    sendToRoom(this.server, message.chat_room._id, 'new-message', updated_Message);
+    sendToRoom(this.server, message.chat_room._id, 'update-message', updated_Message);
     return updated_Message;
   }
 
@@ -92,7 +95,7 @@ export class MessageRepository {
   if(message.file_path){
     await this.storage_file.delete(message.file_path);
   }
-  sendToRoom(this.server, message.chat_room._id, 'new-message', deleteResponse);
+  sendToRoom(this.server, message.chat_room._id, 'delete-message', deleteResponse);
   return message;
  }
 }

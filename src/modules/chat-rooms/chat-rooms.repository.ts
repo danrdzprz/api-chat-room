@@ -6,10 +6,18 @@ import { ChatRoom, ChatRoomDocument } from 'src/schemas/chat-room.schema';
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat-room.dto';
 import { PaginationDto } from 'src/common/dto/pagination-response.dto';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'socket.io';
+import { sentToAll } from 'src/sockets/rooms';
+
 @Injectable()
+@WebSocketGateway()
 export class ChatRoomRepository {
- constructor(@InjectModel(ChatRoom.name) private model: Model<ChatRoomDocument>){
- }
+  @WebSocketServer()
+  server: Server;
+  
+  constructor(@InjectModel(ChatRoom.name) private model: Model<ChatRoomDocument>){
+  }
 
  async index(options: PaginationOptions): Promise<PaginationDto<ChatRoom>>{
   const total = await this.model.countDocuments().exec();
@@ -41,6 +49,7 @@ export class ChatRoomRepository {
 
  async store(user_id: string, data: CreateChatRoomDto):Promise<ChatRoomDocument>{
   const new_ChatRoom = await this.model.create({ ...data, owner: user_id}); 
+  sentToAll(this.server,'chat-rooms', 'new-chat-room', new_ChatRoom); 
   return new_ChatRoom;
  }
 
@@ -52,6 +61,7 @@ export class ChatRoomRepository {
 
  async remove(id: string): Promise<ChatRoomDocument>{
   const deleteResponse = await this.model.findByIdAndDelete(id);
+  sentToAll(this.server,'chat-rooms', 'delete-chat-room', deleteResponse); 
   return deleteResponse;
  }
 }

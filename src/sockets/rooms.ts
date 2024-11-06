@@ -28,3 +28,15 @@ export function sendToRoom(
 ) {
   server.sockets.to(getRoom(roomId)).emit(event, payload);
 }
+
+export function sentToAll(
+  server: Server,
+  roomId: string,
+  event: string,
+  payload: any,
+) {
+  console.log(roomId, event, payload);
+  server.sockets.emit(event, payload); // Actually send the message to the user device via WebSocket channel.
+  // server.sockets.to(roomId).emit(event, payload); // Actually send the message to the user device via WebSocket channel.
+  // server.sockets.emit(event, payload); // Actually send the message to the user device via WebSocket channel.
+}

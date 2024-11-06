@@ -38,7 +38,6 @@ export class AuthenticatedSocketAdapter extends IoAdapter {
         socket.user = user;
         return next();
       } catch (error: any) {
-        console.log('Authentication error');
         return next(new Error('Authentication error'));
       }
     });
