@@ -7,6 +7,7 @@ import { PaginationOptions } from 'src/common/utils/pagination-options';
 import { MessageRepository } from '../messages/messages.repository';
 import { CreateTextMessageDto } from '../messages/dto/create-text-message.dto';
 import { CreateFileMessageDto } from '../messages/dto/create-image-message.dto';
+import { SearchMessageDto } from './dto/search-message.dto';
 
 @Injectable()
 export class ChatRoomsService {
@@ -36,6 +37,7 @@ export class ChatRoomsService {
 
   remove(id: string) {
     this.chat_room_repository.remove(id);
+    this.message_repository.deleteAllMessages(id);
     return { message: this.i18n.t('modules.chat_room.delete.success') };
   }
 
@@ -59,5 +61,9 @@ export class ChatRoomsService {
 
   async getMessages(chat_room_id: string, options: PaginationOptions) {
     return await this.message_repository.index(chat_room_id, options);
+  }
+
+  async searchMessage(chat_room_id: string, options: SearchMessageDto) {
+    return await this.message_repository.findByText(chat_room_id, options.text);
   }
 }

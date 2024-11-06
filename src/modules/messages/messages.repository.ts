@@ -54,6 +54,15 @@ export class MessageRepository {
   return response;
  }
 
+ async deleteAllMessages(chat_room_id: string){
+   const messages = await this.model.find({})
+   .select({"_id":1, "text": 1, "file_path": 1, "createdAt": 1})
+   .exec();
+   for (const message of messages) {
+      await this.remove(message._id);
+   }
+ }
+
  async detail(id : string|unknown):Promise<MessageDocument>{
   const message = await this.model.findById(id).select({"_id":1, "text": 1, "file_path": 1, "createdAt": 1 })
   .populate({path: 'owner',select: {'_id':1,'name':1}})
@@ -62,6 +71,22 @@ export class MessageRepository {
   .exec();
   message.file_url = message.file_path ? await this.storage_file.getUrl(message.file_path) : null;
   return message as MessageDocument;
+ }
+
+ async findByText(id : string|unknown, text:string):Promise<MessageDocument[]>{
+  const messages = await this.model.find({chat_room: id, text: { $regex: '.*' + text + '.*' } })
+  .select({"_id":1, "text": 1, "file_path": 1, "createdAt": 1 })
+  .populate({path: 'owner',select: {'_id':1,'name':1}})
+  .populate({path: 'chat_room',select: {'_id':1,'name':1}})
+  .limit(10)
+  .lean()
+  .exec();
+
+  messages.map( async x => {
+    x.file_url = x.file_path ? await this.storage_file.getUrl(x.file_path) : null;
+    return x;
+  });
+  return messages as MessageDocument[];
  }
 
  async storeTextMessage(user_id: string, chat_room_id: string, data: CreateTextMessageDto):Promise<MessageDocument>{

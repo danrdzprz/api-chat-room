@@ -10,6 +10,7 @@ import { CreateTextMessageDto } from '../messages/dto/create-text-message.dto';
 import { FormDataRequest } from 'nestjs-form-data';
 import { IsValidChatRoom } from 'src/common/helpers/guards/is-valid-chat-room.guard';
 import { CreateFileMessageDto } from '../messages/dto/create-image-message.dto';
+import { SearchMessageDto } from './dto/search-message.dto';
 
 @Controller('chat-rooms')
 export class ChatRoomsController {
@@ -62,5 +63,12 @@ export class ChatRoomsController {
   @FormDataRequest()
   fileMessage(@Auth() { id }: UserPayload, @Param('id') chat_room_id: string, @Body() data: CreateFileMessageDto) {
     return this.chatRoomsService.fileMessage(id, chat_room_id, data);
+  }
+
+  @Get(':id/search-message')
+  @UseGuards(IsValidChatRoom)
+  @FormDataRequest()
+  searchMessage( @Param('id') id: string, @Query() data:SearchMessageDto) {
+    return this.chatRoomsService.searchMessage(id, data );
   }
 }

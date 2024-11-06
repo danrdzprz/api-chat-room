@@ -3,7 +3,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { UserDto } from '../../users/dto/user.dto';
 
 export class ChatRoomDto {
-    @ApiProperty({description: 'Nombre del producto.', example: "papas"})
+    @ApiProperty({description: 'Nombre la sala de char.', example: "papas"})
     @IsString()
     name: string;
 
