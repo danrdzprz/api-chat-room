@@ -105,6 +105,6 @@
     "maxLength":"El campo debe ser menor o igual a {max} caracteres",
     "minLength": "El campo debe ser mayor o igual a {min} caracteres",
     "isEnum": "El campo debe ser un valor válido",
-    "Match":"$param1 y $param2 deben ser iguales"
-
+    "Match":"$param1 y $param2 deben ser iguales",
+    "isEmail":"El campo debe ser debe ser un correo electrónico"
 }
