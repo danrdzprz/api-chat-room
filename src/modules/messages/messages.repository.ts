@@ -24,20 +24,18 @@ export class MessageRepository {
   ){
   }
 
- private storage_path = 'messages';
-
-
  async index(chat_room_id: string, options: PaginationOptions): Promise<PaginationDto<Message>>{
-  const total = await this.model.countDocuments().exec();
+  const total = await this.model.find({chat_room: chat_room_id}).countDocuments().exec();
   const items = parseInt(options.itemsPerPage); 
   const current_page = parseInt(options.page); 
   const total_pages = total > 0 ? Math.ceil( total / items): 1;
+  // const total_pages = Math.floor((total - 1)/ items) + 1;
   const previous_page = current_page != 1  ? current_page - 1 : null;
   const next_page = current_page != total_pages ? current_page +  1 : null;
   const skip = current_page != 1 ? (current_page - 1) * items : 0;
-  const Messages = await this.model.find({chat_room: chat_room_id}).select({"_id":1, "text": 1, "file_path": 1})
+  const Messages = await this.model.find({chat_room: chat_room_id}).select({"_id":1, "text": 1, "file_path": 1, "createdAt": 1})
   .populate({path: 'owner',select: {'_id':1,'name':1}})
-  .sort({createdAt: 'asc'})
+  .sort({createdAt: 'desc'})
   .skip(skip).limit(items).exec();
   const response = {
     data:Messages,
@@ -51,7 +49,7 @@ export class MessageRepository {
  }
 
  async detail(id : string|unknown):Promise<MessageDocument>{
-  const message = await this.model.findById(id).select({"_id":1, "text": 1, "file_path": 1 })
+  const message = await this.model.findById(id).select({"_id":1, "text": 1, "file_path": 1, "createdAt": 1 })
   .populate({path: 'owner',select: {'_id':1,'name':1}})
   .populate({path: 'chat_room',select: {'_id':1,'name':1}})
   .exec();

@@ -10,12 +10,12 @@ StorageService{
   private storage_path: string;
 
   constructor(private configService: ConfigService) {
-    this.storage_path = 'src/storage/';
+    this.storage_path = 'src/public/images/';
   }
 
   async upload(file_name: string, file: Buffer):Promise<string>{
-    const path = `${this.storage_path}/${file_name}`;
-    const writeStream = fs.createWriteStream(`${this.storage_path}${file_name}`);
+    const path = `${this.storage_path}${file_name}`;
+    const writeStream = fs.createWriteStream(path);
     writeStream.write(file);
     return `${path}`;
   }

@@ -11,8 +11,15 @@ import { ChatRoomsModule } from './modules/chat-rooms/chat-rooms.module';
 import { MessagesModule } from './modules/messages/messages.module';
 import * as path from 'path';
 import { SocketsGateway } from './sockets/sockets.gateway';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
+console.log(join(__dirname, '..', 'src/public'));
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'src/public'),
+    }),
     // MongooseModule.forRoot(mongodb_url),
     I18nModule.forRoot({
       fallbackLanguage: 'es',

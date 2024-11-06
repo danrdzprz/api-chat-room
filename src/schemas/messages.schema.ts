@@ -28,12 +28,3 @@ export class Message {
 }
 
 export const MessageScheme = SchemaFactory.createForClass(Message);
-
-MessageScheme.pre('find', async function (next) {
-  try {
-    this.set('file_url', this.get("file_path"),);
-    return next();
-  } catch (err) {
-    return next(err);
-  }
-});
