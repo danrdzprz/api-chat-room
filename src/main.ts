@@ -9,6 +9,7 @@ import { MongooseExceptionFilter } from './common/helpers/exceptions/database-ex
 import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
 import { BadRequestExceptionFilter } from './common/helpers/exceptions/bad-request-excepction';
 import { AuthenticatedSocketAdapter } from './sockets/authenticated-socket.adapter';
+import { useContainer } from 'class-validator';
 
 const PORT = parseInt(process.env.APP_PORT, 10) || 4000;
 
@@ -33,8 +34,7 @@ async function bootstrap() {
   app.useGlobalPipes(validationOptions);
   app.useGlobalGuards(new JwtAuthGuard(new Reflector));
   app.useWebSocketAdapter(new AuthenticatedSocketAdapter(app)); // Add our custom socket adapter.
-
-
+  useContainer(app.select(AppModule), {fallbackOnErrors: true}); 
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('/', app, document);
 

@@ -55,11 +55,11 @@ export class MessageRepository {
  }
 
  async deleteAllMessages(chat_room_id: string){
-   const messages = await this.model.find({})
+   const messages = await this.model.find({chat_room: chat_room_id})
    .select({"_id":1, "text": 1, "file_path": 1, "createdAt": 1})
    .exec();
    for (const message of messages) {
-      await this.remove(message._id);
+      await this.model.findByIdAndDelete(message._id);
    }
  }
 
@@ -92,7 +92,7 @@ export class MessageRepository {
  async storeTextMessage(user_id: string, chat_room_id: string, data: CreateTextMessageDto):Promise<MessageDocument>{
   const new_Message = await this.model.create({ text: data.text, chat_room: chat_room_id, owner: user_id}); 
   const detail = await this.detail(new_Message._id);
-  sendToRoom(this.server, chat_room_id, 'new-message', detail);
+  sendToRoom(this.server, chat_room_id, 'new-message-'+chat_room_id, detail);
   return new_Message;
  }
 
@@ -102,7 +102,7 @@ export class MessageRepository {
     const path = await this.storage_file.upload(`${new_Message._id}_${data.file.originalName}`, data.file.buffer);
     const updated_Message = await this.model.findByIdAndUpdate(new_Message._id, {file_path: path}, { new: true }).exec();
     const detail = await this.detail(new_Message._id);
-    sendToRoom(this.server, chat_room_id, 'new-message', detail);
+    sendToRoom(this.server, chat_room_id, 'new-message-'+chat_room_id, detail);
     return updated_Message;
   }
  }
@@ -110,7 +110,7 @@ export class MessageRepository {
   async update(id: string, data:UpdateMessageDto):Promise<MessageDocument>{
     const message = await this.detail(id);
     const updated_Message = await this.model.findByIdAndUpdate(id, data, { new: true }).exec();
-    sendToRoom(this.server, message.chat_room._id, 'update-message', updated_Message);
+    sendToRoom(this.server, message.chat_room._id, 'update-message-'+message.chat_room._id, updated_Message);
     return updated_Message;
   }
 
@@ -120,7 +120,7 @@ export class MessageRepository {
   if(message.file_path){
     await this.storage_file.delete(message.file_path);
   }
-  sendToRoom(this.server, message.chat_room._id, 'delete-message', deleteResponse);
+  sendToRoom(this.server, message.chat_room._id, 'delete-message-'+message.chat_room._id, deleteResponse);
   return message;
  }
 }

@@ -10,9 +10,7 @@ export function sendToUser(
   event: string,
   payload: any,
 ) {
-  console.log(event, payload);
   server.sockets.to(getUserRoom(userId)).emit(event, payload); // Actually send the message to the user device via WebSocket channel.
-  // server.sockets.emit(event, payload); // Actually send the message to the user device via WebSocket channel.
 }
 
 

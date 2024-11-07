@@ -106,5 +106,6 @@
     "minLength": "El campo debe ser mayor o igual a {min} caracteres",
     "isEnum": "El campo debe ser un valor válido",
     "Match":"$param1 y $param2 deben ser iguales",
-    "isEmail":"El campo debe ser debe ser un correo electrónico"
+    "isEmail":"El campo debe ser debe ser un correo electrónico",
+    "field is already taken":"El campo debe ser debe ser un correo electrónico"
 }
