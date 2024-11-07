@@ -18,7 +18,7 @@ export class ChatRoomsService {
   ) {}
   create(user_id: string, createChatRoomDto: CreateChatRoomDto) {
     this.chat_room_repository.store(user_id, createChatRoomDto);
-    return { message: this.i18n.t('modules.chat_room.register.success') };
+    return { message: this.i18n.t('modules.chat_room.store.success') };
 
   }
 
