@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { MessagesService } from './messages.service';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { IsValidMessage } from 'src/common/helpers/guards/is-valid-message.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('messages')
+@ApiBearerAuth()
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 

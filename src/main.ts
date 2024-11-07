@@ -36,7 +36,7 @@ async function bootstrap() {
   app.useWebSocketAdapter(new AuthenticatedSocketAdapter(app)); // Add our custom socket adapter.
   useContainer(app.select(AppModule), {fallbackOnErrors: true}); 
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('/', app, document);
+  SwaggerModule.setup('/docs', app, document);
 
   await app.listen(PORT, () => {
     console.log(`🚀 Application running at port ${PORT}`);

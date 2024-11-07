@@ -36,7 +36,7 @@ export class AuthController {
   }
 
   @Post('register')
-  @ApiOperation({ summary: 'Endpoint para el login por medio de un correo y un password.' })
+  @ApiOperation({ summary: 'Endpoint regístrate por medio de un correo y un password.' })
   @ApiResponse({
     status:201,
     description: 'Token para obtener acceso.',

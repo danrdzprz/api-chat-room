@@ -13,11 +13,11 @@ import { CreateFileMessageDto } from '../messages/dto/create-image-message.dto';
 import { SearchMessageDto } from './dto/search-message.dto';
 
 @Controller('chat-rooms')
+@ApiBearerAuth()
 export class ChatRoomsController {
   constructor(private readonly chatRoomsService: ChatRoomsService) {}
 
   @Post()
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Crea una nueva sala de chat.' })
   create(@Auth() { id }: UserPayload, @Body() createChatRoomDto: CreateChatRoomDto) {
     return this.chatRoomsService.create(id, createChatRoomDto);
