@@ -20,7 +20,7 @@ $ docker compose up down
 ## Requisitos
 
 - `Docker`
-- `Node js 20`
+- `Nodejs 20`
 
 ## Instalación
 
@@ -30,4 +30,4 @@ $ docker compose up down
 * Ejecutar docker => docker compose up -d
 
 ## Documentación de la api
-* http://localhost:3001/docs
+* http://localhost:4000/docs

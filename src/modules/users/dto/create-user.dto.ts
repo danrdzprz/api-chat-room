@@ -1,7 +1,7 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, Validate} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Matches, MinLength, Validate} from 'class-validator';
 import { ApiProperty } from "@nestjs/swagger";
-import { Unique } from 'src/common/helpers/custom-validations/Unique.validation';
 import { UniqueValidator } from 'src/common/helpers/custom-validations/rules/UniqueRule';
+import { Match } from 'src/common/helpers/custom-validations/match.decorator';
 
 export class CreateUserDto {
     @ApiProperty({description: 'nombre del producto', example: "Daniel"})
@@ -25,5 +25,6 @@ export class CreateUserDto {
     @IsString()
     @IsNotEmpty()
     @MinLength(8)
+    @Match('password')
     password_confirmation: string;
 }
