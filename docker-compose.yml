@@ -17,7 +17,7 @@ services:
       DATABASE_USER: ${DATABASE_USER}
       DATABASE_PASS: ${DATABASE_PASS}
     ports:
-      - '4000:4000'
+      - '${APP_PORT}:${APP_PORT}'
     depends_on:
       - database
     command: npm run start:dev
